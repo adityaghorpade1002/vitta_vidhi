@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 const APPS_SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbz3YVJeDbEGziHeBluUA8ncxlW1KcEFAf7mmpTIJUVVNgsPp3uG0KNebQvXHKsG5ERE/exec';
+  'https://script.google.com/macros/s/AKfycbyYqqn1QGuR3xytZyypYORzH8GxUqDAoa2rduGOs4CT4sBuvo3ebrGkEgHwCxl2lzbP/exec';
 
 // https://vite.dev/config/
 export default defineConfig({
