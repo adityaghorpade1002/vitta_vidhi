@@ -155,18 +155,18 @@ export const Footer: React.FC = () => {
                 </a>
               </div>
 
-              {/* Official Social Media Links */}
-              <div className="pt-3 border-t border-[#7E2231]/40 space-y-2">
+              {/* Dedicated Footer Social Media Section */}
+              <div className="pt-4 border-t border-[#7E2231]/60 space-y-2.5">
                 <div className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-wider">
-                  Connect With Us
+                  Social Media
                 </div>
-                <div className="flex items-center space-x-2.5">
+                <div className="flex items-center space-x-3">
                   <a
                     href={SITE_CONFIG.socials.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label="Follow Vitta Vidhi Advisors on Instagram (@vittavidhi_advisors)"
-                    className="p-2 rounded-xl bg-[#580B14] border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#36050B] transition-all transform hover:scale-105 flex items-center space-x-1.5 text-xs font-semibold"
+                    aria-label="Follow Vitta Vidhi Advisors on Instagram"
+                    className="px-3 py-2 rounded-xl bg-[#580B14] border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-gold-gradient hover:text-[#36050B] hover:border-[#D4AF37] transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 shadow-md flex items-center space-x-2 text-xs font-bold"
                   >
                     <InstagramIcon className="w-4 h-4" />
                     <span>Instagram</span>
@@ -176,7 +176,7 @@ export const Footer: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Connect with Vitta Vidhi Advisors on LinkedIn"
-                    className="p-2 rounded-xl bg-[#580B14] border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#36050B] transition-all transform hover:scale-105 flex items-center space-x-1.5 text-xs font-semibold"
+                    className="px-3 py-2 rounded-xl bg-[#580B14] border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-gold-gradient hover:text-[#36050B] hover:border-[#D4AF37] transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 shadow-md flex items-center space-x-2 text-xs font-bold"
                   >
                     <LinkedinIcon className="w-4 h-4" />
                     <span>LinkedIn</span>
