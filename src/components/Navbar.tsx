@@ -2,6 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { SITE_CONFIG } from '../config/siteConfig';
 import { Menu, X, Phone, MessageSquare, ArrowRight, Calculator } from 'lucide-react';
 
+const InstagramIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
+
+const LinkedinIcon: React.FC<{ className?: string }> = ({ className = "w-3.5 h-3.5" }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+  </svg>
+);
+
 interface NavbarProps {
   onOpenCalculator?: () => void;
 }
@@ -170,7 +184,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCalculator }) => {
         {/* Mobile Navigation Drawer */}
         <div
           className={`lg:hidden transition-all duration-300 overflow-hidden bg-[#36050B] border-b border-[#D4AF37]/30 ${
-            mobileMenuOpen ? 'max-h-[500px] opacity-100 py-6 px-6' : 'max-h-0 opacity-0 py-0 px-6'
+            mobileMenuOpen ? 'max-h-[550px] opacity-100 py-6 px-6' : 'max-h-0 opacity-0 py-0 px-6'
           }`}
         >
           <div className="flex flex-col space-y-4">
@@ -214,11 +228,37 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCalculator }) => {
                 href={`https://wa.me/${SITE_CONFIG.contact.whatsappNumber}?text=${encodeURIComponent(SITE_CONFIG.contact.whatsappDefaultMessage)}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Chat on WhatsApp with Vitta Vidhi Advisors"
                 className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-center font-bold text-white text-sm flex items-center justify-center space-x-2"
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>Chat on WhatsApp ({SITE_CONFIG.contact.phoneFormatted})</span>
               </a>
+
+              {/* Mobile Menu Social Profiles */}
+              <div className="pt-2 flex items-center justify-center space-x-3 text-xs text-gray-300">
+                <span className="font-semibold text-[#D4AF37]">Connect:</span>
+                <a
+                  href={SITE_CONFIG.socials.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow Vitta Vidhi Advisors on Instagram (@vittavidhi_advisors)"
+                  className="px-3 py-1.5 rounded-lg bg-[#580B14] border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#36050B] transition-all flex items-center space-x-1.5 font-bold text-xs"
+                >
+                  <InstagramIcon className="w-3.5 h-3.5" />
+                  <span>Instagram</span>
+                </a>
+                <a
+                  href={SITE_CONFIG.socials.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Connect with Vitta Vidhi Advisors on LinkedIn"
+                  className="px-3 py-1.5 rounded-lg bg-[#580B14] border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#36050B] transition-all flex items-center space-x-1.5 font-bold text-xs"
+                >
+                  <LinkedinIcon className="w-3.5 h-3.5" />
+                  <span>LinkedIn</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

@@ -2,6 +2,19 @@ import React, { useState } from 'react';
 import { SITE_CONFIG, SERVICES_DATA } from '../config/siteConfig';
 import { Phone, Mail, MapPin, ArrowUp, X } from 'lucide-react';
 
+const InstagramIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
+
+const LinkedinIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+  </svg>
+);
 
 export const Footer: React.FC = () => {
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
@@ -140,6 +153,35 @@ export const Footer: React.FC = () => {
                 <a href={`tel:${SITE_CONFIG.contact.phone}`} className="hover:text-white font-bold">
                   {SITE_CONFIG.contact.phoneFormatted}
                 </a>
+              </div>
+
+              {/* Official Social Media Links */}
+              <div className="pt-3 border-t border-[#7E2231]/40 space-y-2">
+                <div className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-wider">
+                  Connect With Us
+                </div>
+                <div className="flex items-center space-x-2.5">
+                  <a
+                    href={SITE_CONFIG.socials.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Follow Vitta Vidhi Advisors on Instagram (@vittavidhi_advisors)"
+                    className="p-2 rounded-xl bg-[#580B14] border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#36050B] transition-all transform hover:scale-105 flex items-center space-x-1.5 text-xs font-semibold"
+                  >
+                    <InstagramIcon className="w-4 h-4" />
+                    <span>Instagram</span>
+                  </a>
+                  <a
+                    href={SITE_CONFIG.socials.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Connect with Vitta Vidhi Advisors on LinkedIn"
+                    className="p-2 rounded-xl bg-[#580B14] border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#36050B] transition-all transform hover:scale-105 flex items-center space-x-1.5 text-xs font-semibold"
+                  >
+                    <LinkedinIcon className="w-4 h-4" />
+                    <span>LinkedIn</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

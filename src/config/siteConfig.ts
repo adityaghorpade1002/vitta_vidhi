@@ -63,10 +63,9 @@ export const SITE_CONFIG = {
 
 
   socials: {
-    linkedin: "https://linkedin.com/company/vitta-vidhi-advisors",
-    twitter: "https://twitter.com/vittavidhi",
-    facebook: "https://facebook.com/vittavidhi",
-    instagram: "https://instagram.com/vittavidhiadvisors",
+    linkedin: "https://www.linkedin.com/in/vitta-vidhi-advisors-27b304426",
+    instagram: "https://www.instagram.com/vittavidhi_advisors",
+    instagramHandle: "@vittavidhi_advisors",
   },
 
   stats: [
