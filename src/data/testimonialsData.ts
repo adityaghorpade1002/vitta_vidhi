@@ -7,6 +7,7 @@ export interface TestimonialItem {
   company?: string;
   location?: string;
   isPlaceholder?: boolean;
+  submittedAt?: string;
 }
 
 /**

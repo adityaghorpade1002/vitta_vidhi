@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import type { TestimonialItem } from '../data/testimonialsData';
-import { fetchApprovedReviews, submitClientReview, REVIEWS_API_URL } from '../config/reviewsConfig';
+import { getReviewsApiEndpoint, submitClientReview } from '../config/reviewsConfig';
 import { Star, Quote, ChevronLeft, ChevronRight, MessageSquarePlus, X, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
 
 export const TestimonialsSection: React.FC = () => {
   const [reviewsList, setReviewsList] = useState<TestimonialItem[]>([]);
   const [loadingReviews, setLoadingReviews] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Review Submission Modal States
@@ -25,47 +26,64 @@ export const TestimonialsSection: React.FC = () => {
 
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 
-  // Fetch approved reviews from Google Sheets API with caching disabled
+  // Fetch approved reviews from Google Sheets API using /api/reviews proxy on dev
   const loadApprovedReviews = async (isInitial: boolean = false) => {
-    if (isInitial) setLoadingReviews(true);
+    const API_ENDPOINT = getReviewsApiEndpoint();
+    console.log("Reviews API URL:", API_ENDPOINT);
 
-    if (!REVIEWS_API_URL || REVIEWS_API_URL.includes('YOUR_')) {
-      console.warn('VITE_REVIEWS_API_URL environment variable is missing.');
-      setLoadingReviews(false);
-      return;
-    }
+    if (isInitial) setLoadingReviews(true);
+    setFetchError(null);
 
     try {
-      const fetched = await fetchApprovedReviews();
-      setReviewsList(fetched || []);
-      // Reset index if out of bounds
-      setCurrentIndex((prev) => (fetched && prev >= fetched.length ? 0 : prev));
-    } catch (err) {
-      console.error('Google Sheets reviews sync error:', err);
+      const url = `${API_ENDPOINT}${API_ENDPOINT.includes('?') ? '&' : '?'}t=${Date.now()}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Reviews API response:", data);
+
+      if (data && data.success && Array.isArray(data.reviews)) {
+        const parsed = data.reviews.map((r: any, idx: number) => ({
+          id: String(r.id || `REV-${idx}`),
+          name: String(r.name || 'Valued Client'),
+          rating: Number(r.rating) || 5,
+          service: String(r.service || 'Taxation & Advisory'),
+          review: String(r.review || ''),
+          submittedAt: String(r.submittedAt || ''),
+        }));
+
+        setReviewsList(parsed);
+        setCurrentIndex(0);
+      } else {
+        setReviewsList([]);
+      }
+    } catch (err: any) {
+      console.error("Error loading reviews:", err);
+      setFetchError(err.message || "Unable to load reviews");
     } finally {
       if (isInitial) setLoadingReviews(false);
     }
   };
 
-  // Setup automatic refresh (On mount, on window focus, and every 60 seconds)
+  // Setup mount fetch and periodic 60-second auto-refresh
   useEffect(() => {
-    // 1. Initial Load
     loadApprovedReviews(true);
 
-    // 2. Refresh when user switches back to the tab/window
     const handleFocus = () => {
       loadApprovedReviews(false);
     };
     window.addEventListener('focus', handleFocus);
 
-    // 3. Periodic Background Refresh every 60 seconds (60,000 ms)
-    const refreshInterval = setInterval(() => {
+    const intervalId = setInterval(() => {
       loadApprovedReviews(false);
     }, 60000);
 
     return () => {
       window.removeEventListener('focus', handleFocus);
-      clearInterval(refreshInterval);
+      clearInterval(intervalId);
     };
   }, []);
 
@@ -79,19 +97,13 @@ export const TestimonialsSection: React.FC = () => {
     setCurrentIndex((prev) => (prev - 1 + reviewsList.length) % reviewsList.length);
   };
 
-  // Form Submission to Google Apps Script
+  // Submit Review Handler
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1. Client-side Validation
     if (!reviewForm.fullName.trim()) {
       setSubmitStatus('error');
       setFeedbackMessage('Please enter your full name.');
-      return;
-    }
-    if (reviewForm.fullName.trim().length > 100) {
-      setSubmitStatus('error');
-      setFeedbackMessage('Full name must be under 100 characters.');
       return;
     }
     if (!reviewForm.review.trim()) {
@@ -99,20 +111,13 @@ export const TestimonialsSection: React.FC = () => {
       setFeedbackMessage('Please enter your review message.');
       return;
     }
-    if (reviewForm.review.trim().length > 1500) {
-      setSubmitStatus('error');
-      setFeedbackMessage('Review text must be under 1500 characters.');
-      return;
-    }
 
-    // Anti-spam Honeypot check
     if (reviewForm.hp_field) {
       setSubmitStatus('success');
       setFeedbackMessage('Thank you for sharing your experience! Your review has been submitted for approval.');
       return;
     }
 
-    // 2. Disable button & set submitting state
     setIsSubmitting(true);
     setSubmitStatus('idle');
     setFeedbackMessage('');
@@ -130,7 +135,6 @@ export const TestimonialsSection: React.FC = () => {
         setFeedbackMessage(
           result.message || 'Thank you for sharing your experience! Your review has been submitted for approval.'
         );
-        // Reset form
         setReviewForm({
           fullName: '',
           rating: 5,
@@ -139,11 +143,9 @@ export const TestimonialsSection: React.FC = () => {
           hp_field: '',
         });
 
-        // Close modal after short delay
         setTimeout(() => {
           setSubmitStatus('idle');
           setReviewModalOpen(false);
-          // Sync approved list
           loadApprovedReviews(false);
         }, 3000);
       } else {
@@ -153,7 +155,7 @@ export const TestimonialsSection: React.FC = () => {
         );
       }
     } catch (err) {
-      console.error('Review submit handler error:', err);
+      console.error('Submit review error:', err);
       setSubmitStatus('error');
       setFeedbackMessage('We could not submit your review right now. Please try again later.');
     } finally {
@@ -190,12 +192,30 @@ export const TestimonialsSection: React.FC = () => {
         {/* Carousel / Card Showcase */}
         <div className="relative max-w-4xl mx-auto">
           {loadingReviews ? (
-            /* Loading Skeleton State */
-            <div className="rounded-3xl bg-white border-2 border-[#D4AF37]/30 shadow-xl p-12 text-center space-y-4 animate-pulse">
+            /* Loading State */
+            <div className="rounded-3xl bg-white border-2 border-[#D4AF37]/30 shadow-xl p-12 text-center space-y-4">
               <RefreshCw className="w-10 h-10 text-[#D4AF37] animate-spin mx-auto" />
               <div className="text-sm font-semibold text-[#580B14]">
                 Loading approved reviews...
               </div>
+            </div>
+          ) : fetchError ? (
+            /* Error State */
+            <div className="rounded-3xl bg-white border-2 border-red-200 shadow-xl p-12 text-center space-y-4">
+              <AlertCircle className="w-12 h-12 text-red-400 mx-auto" />
+              <h3 className="text-xl font-serif-luxury font-bold text-gray-800">
+                Unable to load reviews right now
+              </h3>
+              <p className="text-xs text-gray-500 max-w-md mx-auto">
+                Please check back in a few moments. You can still share your experience with us below.
+              </p>
+              <button
+                onClick={() => setReviewModalOpen(true)}
+                className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gold-gradient text-[#36050B] font-bold text-xs shadow-md"
+              >
+                <MessageSquarePlus className="w-4 h-4" />
+                <span>Share Your Experience</span>
+              </button>
             </div>
           ) : reviewsList.length === 0 ? (
             /* Empty State */
@@ -220,14 +240,14 @@ export const TestimonialsSection: React.FC = () => {
               </button>
             </div>
           ) : current ? (
-            /* Approved Review Card */
-            <div className="relative rounded-3xl bg-white border-2 border-[#D4AF37]/40 shadow-2xl p-8 sm:p-12 text-left transition-all duration-500 transform hover:-translate-y-1">
+            /* Approved Review Card - Guaranteed Visible */
+            <div className="relative rounded-3xl bg-white border-2 border-[#D4AF37]/40 shadow-2xl p-8 sm:p-12 text-left transition-all duration-300">
               <Quote className="absolute top-6 right-8 w-16 h-16 text-[#D4AF37]/15 pointer-events-none" />
 
               <div className="space-y-6">
                 {/* Star Rating */}
                 <div className="flex items-center space-x-1">
-                  {[...Array(current.rating || 5)].map((_, i) => (
+                  {[...Array(Math.max(1, Math.min(5, Number(current.rating) || 5)))].map((_, i) => (
                     <Star key={i} className="w-5 h-5 fill-[#D4AF37] text-[#D4AF37]" />
                   ))}
                   <span className="text-xs font-bold text-gray-500 ml-2">
@@ -246,9 +266,9 @@ export const TestimonialsSection: React.FC = () => {
                     <div className="font-serif-luxury font-bold text-lg text-[#580B14]">
                       {current.name}
                     </div>
-                    {current.company && (
-                      <div className="text-xs text-gray-600 font-sans mt-0.5">
-                        {current.company} {current.location ? `(${current.location})` : ''}
+                    {current.submittedAt && (
+                      <div className="text-xs text-gray-500 font-sans mt-0.5">
+                        Submitted: {new Date(current.submittedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </div>
                     )}
                   </div>
@@ -262,8 +282,8 @@ export const TestimonialsSection: React.FC = () => {
             </div>
           ) : null}
 
-          {/* Carousel Controls & Share Experience Trigger */}
-          {reviewsList.length > 0 && (
+          {/* Carousel Navigation */}
+          {reviewsList.length > 1 && (
             <div className="flex items-center justify-between mt-8">
               <button
                 onClick={prevTestimonial}
@@ -273,14 +293,13 @@ export const TestimonialsSection: React.FC = () => {
                 <ChevronLeft className="w-6 h-6" />
               </button>
 
-              {/* Share Experience Button */}
               <button
                 onClick={() => {
                   setSubmitStatus('idle');
                   setFeedbackMessage('');
                   setReviewModalOpen(true);
                 }}
-                className="inline-flex items-center space-x-2.5 px-7 py-3.5 rounded-full bg-gold-gradient text-[#36050B] font-bold text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                className="inline-flex items-center space-x-2.5 px-7 py-3.5 rounded-full bg-gold-gradient text-[#36050B] font-bold text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all"
               >
                 <MessageSquarePlus className="w-4 h-4 text-[#36050B]" />
                 <span>Share Your Experience</span>
@@ -296,11 +315,27 @@ export const TestimonialsSection: React.FC = () => {
             </div>
           )}
 
+          {reviewsList.length === 1 && (
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={() => {
+                  setSubmitStatus('idle');
+                  setFeedbackMessage('');
+                  setReviewModalOpen(true);
+                }}
+                className="inline-flex items-center space-x-2.5 px-7 py-3.5 rounded-full bg-gold-gradient text-[#36050B] font-bold text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all"
+              >
+                <MessageSquarePlus className="w-4 h-4 text-[#36050B]" />
+                <span>Share Your Experience</span>
+              </button>
+            </div>
+          )}
+
         </div>
 
       </div>
 
-      {/* Share Experience Modal (Google Sheets API Integration) */}
+      {/* Share Experience Modal */}
       {reviewModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
           <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border-2 border-[#D4AF37] overflow-hidden p-6 sm:p-8 text-left my-auto">
@@ -359,7 +394,7 @@ export const TestimonialsSection: React.FC = () => {
                   </div>
                 )}
 
-                {/* Honeypot Spam Prevention */}
+                {/* Honeypot Spam Field */}
                 <input
                   type="text"
                   name="hp_field"
@@ -417,7 +452,7 @@ export const TestimonialsSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Service Used (Dropdown) */}
+                {/* Service Used */}
                 <div>
                   <label className="block font-bold text-gray-700 mb-1.5">
                     Service Used *

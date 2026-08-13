@@ -1,56 +1,55 @@
 import type { TestimonialItem } from '../data/testimonialsData';
 
-// Central configuration for Google Apps Script Web App API URL
-export const REVIEWS_API_URL: string =
-  (import.meta as any).env?.VITE_REVIEWS_API_URL || '';
+export const CONFIGURED_API_URL: string =
+  (import.meta.env.VITE_REVIEWS_API_URL as string) || '';
+
+export const REVIEWS_API_URL = CONFIGURED_API_URL;
+
+export const getReviewsApiEndpoint = (): string => {
+  const isLocalhost =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1');
+
+  if (import.meta.env.DEV || isLocalhost) {
+    return '/api/reviews';
+  }
+
+  return CONFIGURED_API_URL || '/api/reviews';
+};
 
 export interface SubmitReviewPayload {
   name: string;
   rating: number;
   service: string;
   review: string;
-  hp_field?: string; // Honeypot anti-spam
+  hp_field?: string;
 }
 
 /**
- * Helper to construct anti-cached GET URL using timestamp
- */
-const getCacheBustedUrl = (baseUrl: string): string => {
-  const separator = baseUrl.includes('?') ? '&' : '?';
-  return `${baseUrl}${separator}t=${Date.now()}`;
-};
-
-/**
- * Fetch ONLY approved reviews from Google Apps Script GET API
+ * Fetch approved reviews from Google Apps Script GET API (using proxy in dev)
  */
 export const fetchApprovedReviews = async (): Promise<TestimonialItem[]> => {
-  if (!REVIEWS_API_URL || REVIEWS_API_URL.includes('YOUR_')) {
-    console.warn('VITE_REVIEWS_API_URL is missing or unconfigured.');
-    return [];
-  }
+  const API_ENDPOINT = getReviewsApiEndpoint();
+  console.log('Reviews API Endpoint:', API_ENDPOINT);
 
   try {
-    const fetchUrl = getCacheBustedUrl(REVIEWS_API_URL);
+    const separator = API_ENDPOINT.includes('?') ? '&' : '?';
+    const url = `${API_ENDPOINT}${separator}t=${Date.now()}`;
 
-    const response = await fetch(fetchUrl, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-      },
-      cache: 'no-store',
-    });
-
+    const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP Error: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('Reviews API response:', data);
 
-    if (data && data.success === true && Array.isArray(data.reviews)) {
-      return data.reviews.map((r: any) => ({
-        id: String(r.id || 'REV-' + Math.random()),
+    if (data && data.success && Array.isArray(data.reviews)) {
+      return data.reviews.map((r: any, idx: number) => ({
+        id: String(r.id || `REV-${idx}`),
         name: String(r.name || 'Valued Client'),
-        rating: typeof r.rating === 'number' ? r.rating : parseInt(r.rating, 10) || 5,
+        rating: Number(r.rating) || 5,
         service: String(r.service || 'Taxation & Advisory'),
         review: String(r.review || ''),
         submittedAt: String(r.submittedAt || ''),
@@ -59,37 +58,50 @@ export const fetchApprovedReviews = async (): Promise<TestimonialItem[]> => {
 
     return [];
   } catch (error) {
-    console.error('Unable to fetch approved Google Sheets reviews:', error);
+    console.error('Error fetching approved reviews:', error);
     return [];
   }
 };
 
 /**
- * Submit new client review to Google Apps Script POST API (Forces Status = Pending)
+ * Submit new client review to Google Apps Script POST API
+ * Strictly returns success: true ONLY if Google Apps Script returns success: true
  */
 export const submitClientReview = async (
   payload: SubmitReviewPayload
 ): Promise<{ success: boolean; message?: string; error?: string }> => {
-  if (!REVIEWS_API_URL || REVIEWS_API_URL.includes('YOUR_')) {
-    return {
-      success: false,
-      error:
-        'VITE_REVIEWS_API_URL is not configured. Please add VITE_REVIEWS_API_URL to your environment settings.',
-    };
-  }
+  const API_ENDPOINT = getReviewsApiEndpoint();
+
+  console.log('Submitting review:', {
+    name: payload.name,
+    rating: payload.rating,
+    service: payload.service,
+    review: payload.review,
+  });
 
   try {
-    const response = await fetch(REVIEWS_API_URL, {
+    const formData = new URLSearchParams();
+    formData.append('name', payload.name);
+    formData.append('rating', String(payload.rating));
+    formData.append('service', payload.service);
+    formData.append('review', payload.review);
+
+    const response = await fetch(API_ENDPOINT, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8',
-      },
-      body: JSON.stringify(payload),
+      body: formData,
     });
 
-    const data = await response.json();
+    console.log('POST response status:', response.status);
 
-    if (data && data.success) {
+    if (!response.ok) {
+      throw new Error(`Server returned HTTP Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('POST response data:', data);
+
+    // Strictly check response.ok AND data.success === true
+    if (data && data.success === true) {
       return {
         success: true,
         message:
@@ -99,14 +111,18 @@ export const submitClientReview = async (
     } else {
       return {
         success: false,
-        error: data.error || 'Review submission failed. Please try again later.',
+        error:
+          data.error ||
+          'We could not submit your review right now. Please try again later.',
       };
     }
-  } catch (error) {
-    console.error('Review submission fetch error:', error);
+  } catch (error: any) {
+    console.error('Review submission error:', error);
     return {
       success: false,
-      error: 'We could not submit your review right now. Please try again later.',
+      error:
+        error.message ||
+        'We could not submit your review right now. Please try again later.',
     };
   }
 };
