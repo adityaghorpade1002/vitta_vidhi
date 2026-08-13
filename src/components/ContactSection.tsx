@@ -104,7 +104,7 @@ ${formData.message.trim()}`;
       console.error('Mailto launch error:', err);
       setStatus('error');
       setErrorMessage(
-        'Unable to open your email app automatically. Please email your details directly to vittavidhi@gmail.com or call +91 7588536615.'
+        'Unable to open your email app automatically. Please email your details directly to vittavidhi@gmail.com or call +91 9307479801.'
       );
     }
   };
@@ -117,7 +117,7 @@ ${formData.message.trim()}`;
     setErrorMessage('');
 
     try {
-      const phone = SITE_CONFIG.contact.whatsappNumber; // 917588536615
+      const phone = SITE_CONFIG.contact.whatsappNumber; // 919307479801
       const text = `Hello Vitta Vidhi Advisors, I would like to submit an enquiry:
 
 Name: ${formData.fullName.trim()}
@@ -151,7 +151,7 @@ ${formData.message.trim()}`;
       console.error('WhatsApp launch error:', err);
       setStatus('error');
       setErrorMessage(
-        'Unable to open WhatsApp automatically. Please call us directly at +91 7588536615.'
+        'Unable to open WhatsApp automatically. Please call us directly at +91 9307479801.'
       );
     }
   };
@@ -346,7 +346,7 @@ ${formData.message.trim()}`;
                       required
                       value={formData.mobileNumber}
                       onChange={handleChange}
-                      placeholder="e.g. 7588536615"
+                      placeholder="e.g. 9307479801"
                       className="w-full px-4 py-3 rounded-xl bg-[#36050B] border border-[#D4AF37]/30 text-white placeholder-gray-400 focus:outline-none focus:border-[#D4AF37] text-sm transition-colors"
                     />
                   </div>

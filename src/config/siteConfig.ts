@@ -50,12 +50,12 @@ export const SITE_CONFIG = {
   heroDescription: "Vitta Vidhi Advisors is a professional advisory firm dedicated to simplifying financial and business complexities and helping you build a stronger foundation for growth.",
   
   contact: {
-    phone: "7588536615",
-    phoneFormatted: "+91 7588536615",
+    phone: "9307479801",
+    phoneFormatted: "+91 9307479801",
     email: "vittavidhi@gmail.com",
     address: "Vitta Vidhi Advisors, 4th Floor, Premium Commerce Hub, Shivaji Nagar, Pune, Maharashtra - 411005",
     workingHours: "Mon - Sat: 9:30 AM - 7:00 PM IST",
-    whatsappNumber: "917588536615",
+    whatsappNumber: "919307479801",
     whatsappDefaultMessage: "Hello Vitta Vidhi Advisors, I would like to know more about your services.",
     // Web3Forms Access Key configured via environment variable
     web3FormsAccessKey: "", 

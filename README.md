@@ -25,7 +25,7 @@ The contact form operates completely on the client side without any database, cu
      ```
 
 2. **WhatsApp Integration**:
-   - Recipient Number: **`+91 7588536615`** (configured in `SITE_CONFIG.contact.whatsappNumber`)
+   - Recipient Number: **`+91 9307479801`** (configured in `SITE_CONFIG.contact.whatsappNumber`)
    - Opens WhatsApp with a pre-filled enquiry message containing the exact same customer details.
 
 3. **Privacy & Security**:
