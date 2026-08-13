@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="goldGradIcon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E4BF52"/>
+      <stop offset="50%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#9E771B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Circular Outer Frame -->
+  <circle cx="100" cy="100" r="92" fill="#FAF8F5" stroke="#580B14" stroke-width="8" />
+  <circle cx="100" cy="100" r="76" fill="none" stroke="#580B14" stroke-width="3" stroke-dasharray="400" />
+
+  <!-- Bar Chart Accent -->
+  <rect x="72" y="70" width="11" height="20" rx="2" fill="url(#goldGradIcon)" />
+  <rect x="88" y="60" width="11" height="30" rx="2" fill="url(#goldGradIcon)" />
+  <rect x="104" y="48" width="11" height="42" rx="2" fill="url(#goldGradIcon)" />
+  <!-- Growth Arrow -->
+  <path d="M112 62 L128 46 M128 46 H118 M128 46 V56" stroke="url(#goldGradIcon)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+
+  <!-- VVA Monogram Text -->
+  <text x="56" y="125" font-family="Georgia, serif" font-size="52" font-weight="bold" fill="#0F172A">V</text>
+  <text x="88" y="125" font-family="Georgia, serif" font-size="52" font-weight="bold" fill="url(#goldGradIcon)">V</text>
+  <text x="120" y="125" font-family="Georgia, serif" font-size="52" font-weight="bold" fill="#0F172A">A</text>
+</svg>
