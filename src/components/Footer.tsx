@@ -16,6 +16,13 @@ const LinkedinIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" 
   </svg>
 );
 
+const WhatsappIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.84 9.84 0 0 0 12.04 2zm.01 1.67c4.54 0 8.24 3.7 8.24 8.24 0 2.2-.86 4.27-2.42 5.83a8.19 8.19 0 0 1-5.83 2.41c-1.46 0-2.89-.39-4.14-1.13l-.3-.18-3.08.81.82-3-.2-.31a8.21 8.21 0 0 1-1.25-4.39c0-4.54 3.7-8.24 8.24-8.24zm4.52 10.97c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.15.17-.3.19-.55.06-.25-.13-1.06-.39-2.02-1.24-.74-.66-1.24-1.47-1.39-1.72-.15-.25-.02-.38.11-.51.11-.11.25-.29.37-.44.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.77 2.71 4.29 3.8 2.52 1.09 2.52.73 2.97.68.45-.06 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.17-.48-.3z" />
+  </svg>
+);
+
+
 export const Footer: React.FC = () => {
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [termsModalOpen, setTermsModalOpen] = useState(false);
@@ -158,15 +165,25 @@ export const Footer: React.FC = () => {
               {/* Dedicated Footer FOLLOW US Section */}
               <div className="pt-4 border-t border-[#7E2231]/60 space-y-2.5">
                 <div className="text-[11px] font-bold text-[#D4AF37] uppercase tracking-wider">
-                  FOLLOW US
+                  CONNECT WITH US
                 </div>
-                <div className="flex items-center space-x-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+                  <a
+                    href={`https://wa.me/${SITE_CONFIG.contact.whatsappNumber}?text=${encodeURIComponent(SITE_CONFIG.contact.whatsappDefaultMessage)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Chat with Vitta Vidhi Advisors on WhatsApp"
+                    className="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-700/80 border border-emerald-500/40 text-emerald-100 hover:bg-emerald-600 hover:text-white hover:border-emerald-400 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 shadow-md flex items-center space-x-1.5 text-xs font-bold"
+                  >
+                    <WhatsappIcon className="w-4 h-4 text-emerald-300" />
+                    <span>WhatsApp</span>
+                  </a>
                   <a
                     href={SITE_CONFIG.socials.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Follow Vitta Vidhi Advisors on Instagram"
-                    className="px-3.5 py-2 rounded-xl bg-[#580B14] border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-gold-gradient hover:text-[#36050B] hover:border-[#D4AF37] transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 shadow-md flex items-center space-x-2 text-xs font-bold"
+                    className="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-[#580B14] border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-gold-gradient hover:text-[#36050B] hover:border-[#D4AF37] transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 shadow-md flex items-center space-x-1.5 text-xs font-bold"
                   >
                     <InstagramIcon className="w-4 h-4" />
                     <span>Instagram</span>
@@ -176,13 +193,14 @@ export const Footer: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Connect with Vitta Vidhi Advisors on LinkedIn"
-                    className="px-3.5 py-2 rounded-xl bg-[#580B14] border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-gold-gradient hover:text-[#36050B] hover:border-[#D4AF37] transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 shadow-md flex items-center space-x-2 text-xs font-bold"
+                    className="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-[#580B14] border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-gold-gradient hover:text-[#36050B] hover:border-[#D4AF37] transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 shadow-md flex items-center space-x-1.5 text-xs font-bold"
                   >
                     <LinkedinIcon className="w-4 h-4" />
                     <span>LinkedIn</span>
                   </a>
                 </div>
               </div>
+
             </div>
           </div>
 
